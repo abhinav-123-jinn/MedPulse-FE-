@@ -1,0 +1,31 @@
+{
+  "name": "MedPulse – Medicine Reminder",
+  "short_name": "MedPulse",
+  "description": "Smart medicine reminder system. Never miss a dose again.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#F0EDE6",
+  "theme_color": "#7A9E7E",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "medpulse-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "health",
+    "medical",
+    "lifestyle"
+  ],
+  "shortcuts": [
+    {
+      "name": "Add Medication",
+      "short_name": "Add Med",
+      "description": "Quickly add a new medication",
+      "url": "./index.html"
+    }
+  ]
+}
