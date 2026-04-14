@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B8CE8"/>
+      <stop offset="50%" stop-color="#2176D8"/>
+      <stop offset="100%" stop-color="#2EC4A0"/>
+    </linearGradient>
+    <linearGradient id="crossGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5BC8E8" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#2EC4A0" stop-opacity="0.9"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <radialGradient id="rimGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="70%" stop-color="transparent"/>
+      <stop offset="100%" stop-color="rgba(46,196,160,0.4)"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Outer glow ring -->
+  <circle cx="256" cy="256" r="248" fill="url(#rimGrad)"/>
+
+  <!-- Main clock face -->
+  <circle cx="256" cy="256" r="220" fill="url(#bgGrad)" filter="url(#glow)"/>
+  <circle cx="256" cy="256" r="205" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="3"/>
+
+  <!-- Clock tick marks -->
+  <g stroke="rgba(255,255,255,0.6)" stroke-width="5" stroke-linecap="round">
+    <line x1="256" y1="60" x2="256" y2="82"/>
+    <line x1="256" y1="430" x2="256" y2="452"/>
+    <line x1="60" y1="256" x2="82" y2="256"/>
+    <line x1="430" y1="256" x2="452" y2="256"/>
+    <line x1="107" y1="107" x2="122" y2="122"/>
+    <line x1="390" y1="390" x2="405" y2="405"/>
+    <line x1="390" y1="107" x2="405" y2="122"/>
+    <line x1="107" y1="390" x2="122" y2="405"/>
+  </g>
+  <!-- Minor tick marks -->
+  <g stroke="rgba(255,255,255,0.35)" stroke-width="3" stroke-linecap="round">
+    <line x1="316" y1="63" x2="311" y2="83"/>
+    <line x1="196" y1="63" x2="201" y2="83"/>
+    <line x1="369" y1="107" x2="357" y2="122"/>
+    <line x1="449" y1="196" x2="429" y2="201"/>
+    <line x1="449" y1="316" x2="429" y2="311"/>
+    <line x1="369" y1="405" x2="357" y2="390"/>
+    <line x1="316" y1="449" x2="311" y2="429"/>
+    <line x1="196" y1="449" x2="201" y2="429"/>
+    <line x1="143" y1="405" x2="155" y2="390"/>
+    <line x1="63" y1="316" x2="83" y2="311"/>
+    <line x1="63" y1="196" x2="83" y2="201"/>
+    <line x1="143" y1="107" x2="155" y2="122"/>
+  </g>
+
+  <!-- Medical cross (glassy) -->
+  <rect x="208" y="148" width="96" height="216" rx="20" fill="url(#crossGrad)" opacity="0.85"/>
+  <rect x="148" y="208" width="216" height="96" rx="20" fill="url(#crossGrad)" opacity="0.85"/>
+
+  <!-- Heart in center -->
+  <path d="M256 296 C256 296 196 258 196 222 C196 204 210 192 228 196 C238 198 248 208 256 220 C264 208 274 198 284 196 C302 192 316 204 316 222 C316 258 256 296 256 296Z" fill="white" opacity="0.92"/>
+
+  <!-- Pill inside heart -->
+  <rect x="244" y="236" width="24" height="10" rx="5" fill="rgba(46,140,160,0.85)" transform="rotate(-35 256 241)"/>
+  <rect x="248" y="244" width="24" height="10" rx="5" fill="rgba(33,118,216,0.85)" transform="rotate(-35 256 249)"/>
+
+  <!-- Clock hand (hour - pointing towards 10 o'clock) -->
+  <line x1="256" y1="256" x2="176" y2="176" stroke="white" stroke-width="10" stroke-linecap="round" opacity="0.9"/>
+  <!-- Clock hand (minute - pointing towards 2 o'clock) -->
+  <line x1="256" y1="256" x2="318" y2="148" stroke="white" stroke-width="7" stroke-linecap="round" opacity="0.9"/>
+  <!-- Center dot -->
+  <circle cx="256" cy="256" r="10" fill="white" opacity="0.95"/>
+
+  <!-- Bell (top right) -->
+  <g transform="translate(380,68) scale(0.85)" filter="url(#glow)">
+    <path d="M40 8 C40 8 24 20 24 48 L24 64 L56 64 L56 48 C56 20 40 8 40 8Z" fill="#4EE8C0" opacity="0.95"/>
+    <rect x="28" y="64" width="24" height="8" rx="2" fill="#4EE8C0" opacity="0.9"/>
+    <ellipse cx="40" cy="80" rx="10" ry="5" fill="#3CD4AC" opacity="0.85"/>
+    <!-- Bell shine lines -->
+    <line x1="38" y1="72" x2="38" y2="56" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="44" y1="74" x2="46" y2="58" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Notification dot -->
+    <circle cx="56" cy="12" r="10" fill="#FF5A5A"/>
+    <circle cx="56" cy="12" r="5" fill="white" opacity="0.8"/>
+  </g>
+
+  <!-- Outer green swoosh accent -->
+  <path d="M460 180 Q500 256 460 332" fill="none" stroke="#4EE8C0" stroke-width="12" stroke-linecap="round" opacity="0.55"/>
+  <path d="M52 180 Q12 256 52 332" fill="none" stroke="#4EE8C0" stroke-width="12" stroke-linecap="round" opacity="0.35"/>
+</svg>

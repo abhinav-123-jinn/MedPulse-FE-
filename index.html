@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MedPulse – Your Heartbeat on Health</title>
+    <meta name="description" content="MedPulse – Smart medicine reminder system. Never miss a dose again.">
+    <meta name="theme-color" content="#7A9E7E">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="medpulse-icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="medpulse-icon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ===================== SPLASH SCREEN ===================== -->
+<div id="splash-screen">
+    <div class="splash-logo">
+        <img src="medpulse-icon.svg" alt="MedPulse Logo" id="splash-img" onerror="this.style.display='none'; document.getElementById('splash-fallback').style.display='flex'">
+        <div id="splash-fallback" class="splash-fallback" style="display:none">
+            <i class="ph-fill ph-heartbeat"></i>
+        </div>
+    </div>
+    <h1>MedPulse</h1>
+    <p>Your Heartbeat on Health</p>
+    <div class="splash-loader">
+        <div class="loader-bar"></div>
+    </div>
+</div>
+
+<!-- ===================== MAIN APP ===================== -->
+<div id="app" class="hidden">
+
+    <!-- =========== VIEWS =========== -->
+
+    <!-- ── DASHBOARD ── -->
+    <main id="view-dashboard" class="view active">
+        <header class="dash-header">
+            <div class="dash-greeting">
+                <h1 id="dash-hello">Hello, Sarah 👋</h1>
+                <p>You have <strong id="dash-meds-left">0</strong> medicines left for today</p>
+            </div>
+            <div class="dash-header-right">
+                <button id="btn-bell" class="icon-pill" aria-label="Notifications">
+                    <i class="ph-fill ph-bell"></i>
+                    <span class="notif-badge" id="notif-badge" style="display:none">!</span>
+                </button>
+                <img src="https://i.pravatar.cc/150?img=47" alt="Profile" class="dash-avatar" id="btn-go-profile">
+            </div>
+        </header>
+
+        <!-- Horizontal Calendar -->
+        <section class="h-calendar" id="h-calendar"></section>
+
+        <!-- Adherence Card -->
+        <section class="adherence-card">
+            <div class="adherence-top">
+                <div>
+                    <h3>Daily Adherence</h3>
+                    <p id="adherence-msg">You're doing great!</p>
+                </div>
+                <div class="adherence-pct-badge" id="adh-pct">0%</div>
+            </div>
+            <div class="prog-bar-wrap">
+                <div class="prog-bar" id="adh-bar" style="width:0%"></div>
+            </div>
+            <div class="adherence-stats">
+                <div class="adh-stat"><span id="stat-taken">0</span><small>Taken</small></div>
+                <div class="adh-stat"><span id="stat-missed">0</span><small>Missed</small></div>
+                <div class="adh-stat"><span id="stat-left">0</span><small>Left</small></div>
+            </div>
+        </section>
+
+        <!-- Today Schedule -->
+        <section class="schedule-section">
+            <div class="section-row">
+                <h2>Today's Schedule</h2>
+                <button class="link-btn" id="btn-see-all">See All</button>
+            </div>
+            <div id="dash-schedule-list" class="med-list"></div>
+        </section>
+    </main>
+
+    <!-- ── LIBRARY ── -->
+    <main id="view-library" class="view">
+        <header class="page-header">
+            <div>
+                <h1>Medication<br>Library</h1>
+            </div>
+            <button class="icon-pill" id="btn-search-lib" aria-label="Search">
+                <i class="ph ph-magnifying-glass"></i>
+            </button>
+        </header>
+
+        <!-- Search bar (hidden by default) -->
+        <div class="search-bar-wrap" id="search-bar-wrap" style="display:none">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" id="lib-search" placeholder="Search medications...">
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="tabs-row" id="lib-tabs">
+            <button class="tab-btn active" data-cat="All">All</button>
+            <button class="tab-btn" data-cat="Pills">Pills</button>
+            <button class="tab-btn" data-cat="Syrup">Syrup</button>
+            <button class="tab-btn" data-cat="Injections">Injections</button>
+        </div>
+
+        <!-- Refill Banner (conditional) -->
+        <div class="refill-banner" id="refill-banner" style="display:none">
+            <div class="refill-banner-text">
+                <h3>Refill Reminder</h3>
+                <p id="refill-banner-msg">medications are running low on stock. Consider visiting the pharmacy soon.</p>
+                <button class="banner-action-btn" id="btn-view-low-stock">View Low Stock</button>
+            </div>
+            <div class="refill-banner-icon">
+                <i class="ph-fill ph-archive-box"></i>
+            </div>
+        </div>
+
+        <!-- Meds List -->
+        <section class="library-section">
+            <div class="section-row">
+                <h2>Your Medications</h2>
+                <button class="link-btn" id="btn-sort-lib">Sort by Name</button>
+            </div>
+            <div id="lib-med-list" class="med-list"></div>
+        </section>
+    </main>
+
+    <!-- ── HISTORY ── -->
+    <main id="view-history" class="view">
+        <header class="page-header">
+            <div>
+                <h1>Dose History</h1>
+                <p>Your journey to wellness</p>
+            </div>
+            <button class="icon-pill" aria-label="Calendar">
+                <i class="ph ph-calendar-blank"></i>
+            </button>
+        </header>
+
+        <!-- Weekly Chart Card -->
+        <section class="weekly-card">
+            <div class="section-row">
+                <h3>Weekly Adherence</h3>
+                <span class="success-tag" id="weekly-pct-tag">—</span>
+            </div>
+            <div class="bar-chart" id="weekly-bar-chart"></div>
+            <div class="chart-days" id="chart-days"></div>
+        </section>
+
+        <!-- Filter tabs -->
+        <div class="tabs-row" id="hist-tabs">
+            <button class="tab-btn active" data-filter="all">All Logs</button>
+            <button class="tab-btn" data-filter="taken">Taken</button>
+            <button class="tab-btn" data-filter="missed">Missed</button>
+            <button class="tab-btn" data-filter="snoozed">Snoozed</button>
+        </div>
+
+        <section id="history-log-list" class="med-list"></section>
+    </main>
+
+    <!-- ── PROFILE ── -->
+    <main id="view-profile" class="view">
+        <header class="profile-header">
+            <button class="icon-pill" id="btn-profile-back">
+                <i class="ph ph-arrow-left"></i>
+            </button>
+            <h1>Profile</h1>
+            <button class="icon-pill" id="btn-edit-profile">
+                <i class="ph ph-pencil-simple"></i>
+            </button>
+        </header>
+
+        <section class="profile-section">
+            <div class="profile-avatar-wrap">
+                <img src="https://i.pravatar.cc/150?img=47" alt="Profile" class="profile-avatar" id="profile-avatar-img">
+                <div class="online-dot"></div>
+            </div>
+            <h2 id="profile-name">Sarah Jenkins</h2>
+            <p id="profile-since">Member since June 2023</p>
+        </section>
+
+        <section class="profile-stats-card">
+            <div class="ps-stat"><h3 id="ps-adherence">98%</h3><p>Adherence</p></div>
+            <div class="ps-divider"></div>
+            <div class="ps-stat"><h3 id="ps-active-meds">0</h3><p>Active Meds</p></div>
+            <div class="ps-divider"></div>
+            <div class="ps-stat"><h3 id="ps-streak">0</h3><p>Streak</p></div>
+        </section>
+
+        <section class="settings-section">
+            <h2>Reminders &amp; Sounds</h2>
+
+            <div class="setting-item">
+                <div class="setting-icon si-green"><i class="ph-fill ph-bell"></i></div>
+                <div class="setting-text">
+                    <h4>Push Notifications</h4>
+                    <p>Alerts for upcoming dosages</p>
+                </div>
+                <label class="toggle" id="toggle-push-label">
+                    <input type="checkbox" id="toggle-push">
+                    <span class="toggle-track"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-icon si-rose"><i class="ph-fill ph-speaker-high"></i></div>
+                <div class="setting-text">
+                    <h4>Sound Alerts</h4>
+                    <p>Play a gentle chime</p>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" id="toggle-sound" checked>
+                    <span class="toggle-track"></span>
+                </label>
+            </div>
+        </section>
+
+        <section class="settings-section">
+            <h2>Account</h2>
+            <div class="setting-item clickable" id="btn-test-notif">
+                <div class="setting-icon si-blue"><i class="ph-fill ph-paper-plane-tilt"></i></div>
+                <div class="setting-text">
+                    <h4>Test Notification</h4>
+                    <p>Send a sample reminder now</p>
+                </div>
+                <i class="ph ph-caret-right setting-caret"></i>
+            </div>
+            <div class="setting-item clickable" id="btn-request-perm">
+                <div class="setting-icon si-amber"><i class="ph-fill ph-shield-check"></i></div>
+                <div class="setting-text">
+                    <h4>Enable Browser Push</h4>
+                    <p>Allow native OS notifications</p>
+                </div>
+                <i class="ph ph-caret-right setting-caret"></i>
+            </div>
+            <div class="setting-item clickable" id="btn-clear-data">
+                <div class="setting-icon si-red"><i class="ph-fill ph-trash"></i></div>
+                <div class="setting-text">
+                    <h4>Clear All Data</h4>
+                    <p>Reset app to default</p>
+                </div>
+                <i class="ph ph-caret-right setting-caret"></i>
+            </div>
+        </section>
+    </main>
+
+    <!-- =========== BOTTOM NAV =========== -->
+    <nav class="bottom-nav">
+        <button class="bn-item active" data-view="view-dashboard" aria-label="Dashboard">
+            <i class="ph-fill ph-squares-four"></i>
+            <span>Dashboard</span>
+        </button>
+        <button class="bn-item" data-view="view-library" aria-label="Library">
+            <i class="ph-fill ph-first-aid-kit"></i>
+            <span>Library</span>
+        </button>
+
+        <div class="fab-wrap">
+            <button id="btn-fab" class="fab" aria-label="Add Medication">
+                <i class="ph ph-plus"></i>
+            </button>
+        </div>
+
+        <button class="bn-item" data-view="view-history" aria-label="History">
+            <i class="ph-fill ph-clock-counter-clockwise"></i>
+            <span>History</span>
+        </button>
+        <button class="bn-item" data-view="view-profile" aria-label="Profile">
+            <i class="ph-fill ph-user-circle"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+
+    <!-- =========== ADD / EDIT MED MODAL =========== -->
+    <div id="modal-add-med" class="modal-overlay" aria-hidden="true">
+        <div class="modal-sheet" role="dialog" aria-labelledby="modal-title">
+            <div class="modal-header">
+                <button class="icon-pill" id="btn-close-modal"><i class="ph ph-x"></i></button>
+                <h2 id="modal-title">Add Medication</h2>
+                <div style="width:40px"></div>
+            </div>
+
+            <div class="modal-body">
+                <!-- Medicine Name -->
+                <div class="form-group">
+                    <label class="form-label">Medicine Name</label>
+                    <div class="input-icon-wrap">
+                        <i class="ph-fill ph-pill"></i>
+                        <input type="text" id="f-name" class="form-input" placeholder="e.g. Paracetamol" autocomplete="off">
+                    </div>
+                </div>
+
+                <!-- Type -->
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <div class="pills-select" id="f-type-pills">
+                        <button class="pill-sel active" data-val="Pills">Pills</button>
+                        <button class="pill-sel" data-val="Syrup">Syrup</button>
+                        <button class="pill-sel" data-val="Injections">Injections</button>
+                        <button class="pill-sel" data-val="Other">Other</button>
+                    </div>
+                </div>
+
+                <!-- Dosage & Unit -->
+                <div class="form-row">
+                    <div class="form-group" style="flex:2">
+                        <label class="form-label">Dosage</label>
+                        <input type="number" id="f-dosage" class="form-input" placeholder="100" min="0">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label class="form-label">Unit</label>
+                        <select id="f-unit" class="form-input">
+                            <option value="mg">mg</option>
+                            <option value="ml">ml</option>
+                            <option value="IU">IU</option>
+                            <option value="mcg">mcg</option>
+                            <option value="g">g</option>
+                            <option value="pills">pills</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Frequency -->
+                <div class="form-group">
+                    <label class="form-label">Frequency</label>
+                    <div class="pills-select" id="f-freq-pills">
+                        <button class="pill-sel active" data-val="Daily">Daily</button>
+                        <button class="pill-sel" data-val="Weekly">Weekly</button>
+                        <button class="pill-sel" data-val="As needed">As needed</button>
+                    </div>
+                </div>
+
+                <!-- Reminder Times -->
+                <div class="form-group">
+                    <label class="form-label">Reminder Time</label>
+                    <div class="time-input-row">
+                        <div class="time-clock-icon"><i class="ph ph-clock"></i></div>
+                        <input type="time" id="f-time" class="form-input time-input" value="08:30">
+                        <button class="icon-pill sm" id="btn-add-time-icon"><i class="ph ph-calendar-plus"></i></button>
+                    </div>
+                    <div id="extra-times-list" class="extra-times-list"></div>
+                    <button class="outline-btn mt-2" id="btn-add-time">
+                        <i class="ph ph-plus-circle"></i> Add another time
+                    </button>
+                </div>
+
+                <!-- Stock -->
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label class="form-label">Stock (qty)</label>
+                        <input type="number" id="f-stock" class="form-input" placeholder="30" value="30" min="0">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label class="form-label">Low Stock Alert</label>
+                        <input type="number" id="f-low-stock" class="form-input" placeholder="5" value="5" min="1">
+                    </div>
+                </div>
+
+                <!-- Refill Reminder Toggle -->
+                <div class="refill-toggle-card">
+                    <div class="setting-icon si-muted"><i class="ph-fill ph-archive-box"></i></div>
+                    <div class="setting-text">
+                        <h4>Refill Reminder</h4>
+                        <p id="refill-reminder-label">Notify me when stock is low</p>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="f-refill" checked>
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+
+                <!-- Notes -->
+                <div class="form-group">
+                    <label class="form-label">Notes (optional)</label>
+                    <input type="text" id="f-notes" class="form-input" placeholder="e.g. Take with food">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="primary-btn" id="btn-save-med">
+                    <i class="ph-fill ph-check-circle"></i> Save Medication
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========== MED DETAIL MODAL =========== -->
+    <div id="modal-med-detail" class="modal-overlay" aria-hidden="true">
+        <div class="modal-sheet" role="dialog" aria-labelledby="detail-title">
+            <div class="modal-header">
+                <button class="icon-pill" id="btn-close-detail"><i class="ph ph-x"></i></button>
+                <h2 id="detail-title">Medication Details</h2>
+                <button class="icon-pill" id="btn-delete-med"><i class="ph ph-trash"></i></button>
+            </div>
+            <div class="modal-body" id="detail-body"></div>
+        </div>
+    </div>
+
+    <!-- =========== IN-APP NOTIFICATION POPUP =========== -->
+    <div id="in-app-notif" class="in-app-notif" role="alert" aria-live="assertive">
+        <div class="ian-left">
+            <div class="ian-icon" id="ian-icon"><i class="ph-fill ph-pill"></i></div>
+            <div class="ian-text">
+                <strong id="ian-title">Time for Paracetamol</strong>
+                <span id="ian-desc">100mg · Daily</span>
+            </div>
+        </div>
+        <div class="ian-actions">
+            <button class="ian-btn ian-take" id="btn-notif-take">Take</button>
+            <button class="ian-btn ian-snooze" id="btn-notif-snooze">Snooze</button>
+        </div>
+    </div>
+
+    <!-- =========== STOCK ALERT POPUP =========== -->
+    <div id="stock-alert-notif" class="in-app-notif stock-alert" role="alert" aria-live="assertive">
+        <div class="ian-left">
+            <div class="ian-icon ian-icon-amber"><i class="ph-fill ph-warning"></i></div>
+            <div class="ian-text">
+                <strong id="stock-alert-title">Low Stock Alert</strong>
+                <span id="stock-alert-desc">Paracetamol is running low!</span>
+            </div>
+        </div>
+        <div class="ian-actions">
+            <button class="ian-btn ian-stock-dismiss" id="btn-stock-dismiss">Got it</button>
+        </div>
+    </div>
+
+    <!-- =========== TOAST =========== -->
+    <div id="toast" class="toast"></div>
+
+</div><!-- /app -->
+
+<script src="app.js"></script>
+</body>
+</html>
